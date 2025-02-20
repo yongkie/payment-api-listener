@@ -1,0 +1,41 @@
+services:
+  payment-api-db:
+    build:
+      context: ../payment-api-db
+      dockerfile: 'Dockerfile'
+    image: payment-api-db
+    command: postgres -c 'shared_buffers=2048MB'
+      -c 'max_connections=700'
+      -c 'max_worker_processes=200'
+      -c 'max_parallel_workers=200'
+    container_name: payment-api-db
+    volumes:
+      - postgres:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: pg_isready -U postgres
+    restart: unless-stopped
+
+  payment-api-listener:
+    build:
+      context: ../payment-api-listener
+      dockerfile: 'Dockerfile.local'
+    image: payment-api-listener
+    container_name: payment-api-listener
+    ports:
+      - "8088:8088"
+    environment:
+#      DB_HOST: payment-api-db
+#      DB_PORT: 5432
+#      DB_USER: postgres
+#      DB_PASSWORD: password
+#      DB_NAME: paymentdb
+      CONTAINER_ENV: dev
+#    depends_on:
+#      - payment-api-db
+#    links:
+#      - payment-api-db
+
+volumes:
+  postgres:
