@@ -39,9 +39,10 @@ public class TokenInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String requestTokenHeader = request.getHeader(GlobalConstant.AUTHORIZATION);
-        log.debug("auth {}",requestTokenHeader);
+        log.info("auth {}",requestTokenHeader);
         if(requestTokenHeader == null){
-            return true;
+            generateErrorUnauthorized(response);
+            return false;
         }
         String getRequestURIPath = request.getRequestURI();
 
@@ -167,6 +168,6 @@ public class TokenInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        log.info("Authorization Passed");
+        log.info("Finish");
     }
 }
